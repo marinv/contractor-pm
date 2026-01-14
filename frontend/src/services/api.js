@@ -48,6 +48,8 @@ export const uploadLogo = (file) => {
 
 export const deleteLogo = () => api.delete('/auth/logo');
 
+export const updateProfile = (data) => api.put('/auth/profile', data);
+
 // Projects
 export const getProjects = (status) => {
   const params = status ? { status_filter: status } : {};

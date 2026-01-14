@@ -14,6 +14,7 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     company_name = Column(String, nullable=True)
     logo_path = Column(String, nullable=True)
+    vat_id = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     projects = relationship("Project", back_populates="owner")

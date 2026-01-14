@@ -127,3 +127,26 @@ def delete_logo(
         db.refresh(current_user)
 
     return current_user
+
+
+from pydantic import BaseModel
+from typing import Optional as Opt
+
+class UserUpdate(BaseModel):
+    company_name: Opt[str] = None
+    vat_id: Opt[str] = None
+
+
+@router.put("/profile", response_model=UserResponse)
+def update_profile(
+    user_data: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if user_data.company_name is not None:
+        current_user.company_name = user_data.company_name
+    if user_data.vat_id is not None:
+        current_user.vat_id = user_data.vat_id
+    db.commit()
+    db.refresh(current_user)
+    return current_user

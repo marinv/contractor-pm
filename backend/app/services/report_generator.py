@@ -86,7 +86,7 @@ def get_logo_base64(logo_path: str) -> str:
     return f"data:{mime_type};base64,{base64.b64encode(data).decode()}"
 
 
-def generate_html_report(project: Project, db: Session, company_name: str, logo_path: str = None) -> str:
+def generate_html_report(project: Project, db: Session, company_name: str, logo_path: str = None, vat_id: str = None) -> str:
     costs = calculate_project_costs(project, db)
     logo_base64 = get_logo_base64(logo_path)
 
@@ -307,6 +307,7 @@ def generate_html_report(project: Project, db: Session, company_name: str, logo_
     {f'<div class="offer-terms"><div class="section-title">Terms and Conditions</div><div class="terms-content">{project.offer_terms.replace(chr(10), "<br/>")}</div></div>' if project.offer_terms else ''}
 
     <div class="footer">
+        {f'<p><strong>VAT ID:</strong> {vat_id}</p>' if vat_id else ''}
         <p>This offer is valid for 30 days from the date of issue.</p>
         <p>Generated on {datetime.now().strftime('%Y-%m-%d %H:%M')}</p>
     </div>
@@ -316,7 +317,7 @@ def generate_html_report(project: Project, db: Session, company_name: str, logo_
     return html
 
 
-def generate_pdf_report(project: Project, db: Session, company_name: str, logo_path: str = None) -> BytesIO:
+def generate_pdf_report(project: Project, db: Session, company_name: str, logo_path: str = None, vat_id: str = None) -> BytesIO:
     costs = calculate_project_costs(project, db)
     buffer = BytesIO()
 
@@ -510,6 +511,8 @@ def generate_pdf_report(project: Project, db: Session, company_name: str, logo_p
         textColor=colors.grey,
         alignment=1
     )
+    if vat_id:
+        elements.append(Paragraph(f"<b>VAT ID:</b> {vat_id}", footer_style))
     elements.append(Paragraph("This offer is valid for 30 days from the date of issue.", footer_style))
     elements.append(Paragraph(f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M')}", footer_style))
 

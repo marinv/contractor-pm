@@ -1,13 +1,16 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { uploadLogo, deleteLogo } from '../services/api';
+import { uploadLogo, deleteLogo, updateProfile } from '../services/api';
 
 export default function Settings() {
   const { user, updateUser } = useAuth();
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const fileInputRef = useRef(null);
+  const [vatId, setVatId] = useState(user?.vat_id || '');
+  const [companyName, setCompanyName] = useState(user?.company_name || '');
 
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
@@ -48,6 +51,25 @@ export default function Settings() {
       setSuccess('Logo deleted successfully');
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to delete logo');
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    setError('');
+    setSuccess('');
+    setSaving(true);
+
+    try {
+      const response = await updateProfile({
+        company_name: companyName,
+        vat_id: vatId,
+      });
+      updateUser(response.data);
+      setSuccess('Profile updated successfully');
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to update profile');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -113,6 +135,41 @@ export default function Settings() {
       </div>
 
       <div className="settings-section">
+        <h2>Company Information</h2>
+        <p className="settings-description">
+          This information will appear on your reports and commercial offers.
+        </p>
+        <div className="form-grid">
+          <div className="form-group">
+            <label>Company Name</label>
+            <input
+              type="text"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Your company name"
+            />
+          </div>
+          <div className="form-group">
+            <label>VAT ID</label>
+            <input
+              type="text"
+              value={vatId}
+              onChange={(e) => setVatId(e.target.value)}
+              placeholder="e.g., HR12345678901"
+            />
+          </div>
+        </div>
+        <button
+          className="btn btn-primary"
+          onClick={handleSaveProfile}
+          disabled={saving}
+          style={{ marginTop: '16px' }}
+        >
+          {saving ? 'Saving...' : 'Save Changes'}
+        </button>
+      </div>
+
+      <div className="settings-section">
         <h2>Account Information</h2>
         <div className="info-grid">
           <div className="info-item">
@@ -122,10 +179,6 @@ export default function Settings() {
           <div className="info-item">
             <label>Email</label>
             <span>{user?.email}</span>
-          </div>
-          <div className="info-item">
-            <label>Company Name</label>
-            <span>{user?.company_name || 'Not set'}</span>
           </div>
         </div>
       </div>
@@ -243,6 +296,32 @@ export default function Settings() {
           background: #b91c1c;
         }
 
+        .form-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 600;
+          color: #555;
+        }
+
+        .form-group input {
+          width: 100%;
+          padding: 10px 12px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          font-size: 14px;
+        }
+
+        .form-group input:focus {
+          outline: none;
+          border-color: #2c5282;
+        }
+
         .info-grid {
           display: grid;
           gap: 16px;
@@ -262,6 +341,12 @@ export default function Settings() {
 
         .info-item span {
           color: #333;
+        }
+
+        @media (max-width: 600px) {
+          .form-grid {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
     </div>

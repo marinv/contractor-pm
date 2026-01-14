@@ -38,7 +38,7 @@ def get_report(
         )
 
     if format == "pdf":
-        pdf_buffer = generate_pdf_report(project, db, current_user.company_name, current_user.logo_path)
+        pdf_buffer = generate_pdf_report(project, db, current_user.company_name, current_user.logo_path, current_user.vat_id)
         return StreamingResponse(
             pdf_buffer,
             media_type="application/pdf",
@@ -47,7 +47,7 @@ def get_report(
             }
         )
     else:
-        html_content = generate_html_report(project, db, current_user.company_name, current_user.logo_path)
+        html_content = generate_html_report(project, db, current_user.company_name, current_user.logo_path, current_user.vat_id)
         return HTMLResponse(content=html_content)
 
 
@@ -69,7 +69,7 @@ def send_offer_by_email(
         )
 
     # Generate PDF
-    pdf_buffer = generate_pdf_report(project, db, current_user.company_name, current_user.logo_path)
+    pdf_buffer = generate_pdf_report(project, db, current_user.company_name, current_user.logo_path, current_user.vat_id)
     pdf_filename = f"offer_{project.name.replace(' ', '_')}.pdf"
 
     # Prepare email content

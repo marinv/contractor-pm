@@ -23,8 +23,8 @@ COPY --from=frontend-builder /app/frontend/dist ./static
 # Create uploads directory
 RUN mkdir -p uploads
 
-# Expose port
-EXPOSE 8000
+# Railway provides PORT env variable
+ENV PORT=8000
 
-# Run the application
-CMD ["gunicorn", "app.main:app", "--workers", "2", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+# Run the application (uses $PORT from environment)
+CMD gunicorn app.main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT

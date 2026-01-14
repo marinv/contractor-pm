@@ -16,6 +16,7 @@ class UserResponse(BaseModel):
     email: str
     company_name: Optional[str]
     logo_path: Optional[str]
+    vat_id: Optional[str]
     created_at: datetime
 
     class Config:
