@@ -27,4 +27,4 @@ RUN mkdir -p uploads
 ENV PORT=8000
 
 # Run the application (uses $PORT from environment)
-CMD gunicorn app.main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+CMD gunicorn app.main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
