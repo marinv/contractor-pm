@@ -11,8 +11,11 @@ from app.routers import auth, projects, worker_types, time_entries, materials, r
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
 STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 
-# Create database tables (checkfirst=True to avoid errors if tables exist)
-Base.metadata.create_all(bind=engine, checkfirst=True)
+# Create database tables
+try:
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+except Exception as e:
+    print(f"Warning: Could not create all tables: {e}")
 
 app = FastAPI(
     title="Contractor Project Manager",
